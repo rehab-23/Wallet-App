@@ -13,7 +13,7 @@
             <h1>- Dashboard -</h1>
 
             <form action="" method="POST">
-                <label for="">Test Test Test, ...</label><br>
+                <label for="">Test</label><br>
             </form>
 
             <p><a href="home.php">zurück</a></p>
