@@ -1,34 +1,36 @@
 <?php
-include 'Config.php';
-session_start();
+    include 'Config.php';
+    session_start();
 
-if (isset($_POST['ausfuehren_btn'])) {
-    $username = $_SESSION['username'];
-    $betrag = $_POST['betrag'];
-    //Username vergleichen aus Session
-    //Abfrage um Wert von Guthaben für Verrechnung zu haben
-    //als Variable + neuen Einzahl-Betrag addieren
-    $sql = "SELECT guthaben FROM users WHERE username = '$username'";
-    $result = mysqli_query($config, $sql);
+    function einzahlung($config) {
+        if (isset($_POST['ausfuehren_btn'])) {
+            $username = $_SESSION['username'];
+            $betrag = $_POST['betrag'];
+            //Username vergleichen aus Session
+            //Abfrage um Wert von Guthaben für Verrechnung zu haben
+            //als Variable + neuen Einzahl-Betrag addieren
+            $sql = "SELECT guthaben FROM users WHERE username = '$username'";
+            $result = mysqli_query($config, $sql);
 
-    $row = mysqli_num_rows($result);
+            $row = mysqli_num_rows($result);
 
-    //ggf. Fehlermeldung ausgeben
-    if (!$result) {
-        die("SQL-Fehler: " . mysqli_error($config));
+            //ggf. Fehlermeldung ausgeben
+            if (!$result) {
+                die("SQL-Fehler: " . mysqli_error($config));
+            }
+
+            if ($row == 1) {
+                $fetch = mysqli_fetch_assoc($result);
+                $guthaben_alt = $fetch['guthaben'];
+                $guthaben_neu = $guthaben_alt + $betrag;
+                $sql = "UPDATE users SET guthaben='$guthaben_neu' WHERE username='$username'";
+                $result = mysqli_query($config, $sql);
+                echo "<br>Einzahlung erfolgreich";
+            } else {
+                echo "<br>!ERROR - Benutzer nicht gefunden";
+            }
+        }
     }
-
-    if ($row == 1) {
-        $fetch = mysqli_fetch_assoc($result);
-        $guthaben_alt = $fetch['guthaben'];
-        $guthaben_neu = $guthaben_alt + $betrag;
-        $sql = "UPDATE users SET guthaben='$guthaben_neu' WHERE username='$username'";
-        $result = mysqli_query($config, $sql);
-        echo "<br>Einzahlung erfolgreich";
-    } else {
-        echo "<br>!ERROR - Benutzer nicht gefunden";
-    }
-}
 ?>
 
 <!DOCTYPE html>

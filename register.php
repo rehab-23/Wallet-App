@@ -1,38 +1,40 @@
 <?php
     include 'Config.php';
-    
-    if(isset($_POST['register_btn'])) {
-        $username= $_POST['username'];
-        $email= $_POST['email'];
-        $password= $_POST['password'];
-        $password_hashed = password_hash($password, PASSWORD_DEFAULT);
-        $password_wdh= $_POST['password_wdh'];
 
-        //1. kontrolle: email + username prüfen
-        $select= "SELECT * FROM users WHERE email= '$email' OR username = '$username'";
-        $query= mysqli_query($config, $select);
-        $row= mysqli_num_rows($query);
-        $fetch= mysqli_fetch_array($query);
+    function registrieren($config) {
+        if(isset($_POST['register_btn'])) {
+            $username= $_POST['username'];
+            $email= $_POST['email'];
+            $password= $_POST['password'];
+            $password_hashed = password_hash($password, PASSWORD_DEFAULT);
+            $password_wdh= $_POST['password_wdh'];
 
-        if($row == 0) {
-            //2. kontrolle: passwort prüfen
-            echo "<br>Reg wird eingeleitet";
-            if($password_wdh == $password) {
-                $select= "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password_hashed')";
-                $query= mysqli_query($config, $select);
+            //1. kontrolle: email + username prüfen
+            $select= "SELECT * FROM users WHERE email= '$email' OR username = '$username'";
+            $query= mysqli_query($config, $select);
+            $row= mysqli_num_rows($query);
+            $fetch= mysqli_fetch_array($query);
 
-                if ($query) {
-                    header('Location: login.php');
-                    exit;
+            if($row == 0) {
+                //2. kontrolle: passwort prüfen
+                echo "<br>Reg wird eingeleitet";
+                if($password_wdh == $password) {
+                    $select= "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password_hashed')";
+                    $query= mysqli_query($config, $select);
+
+                    if ($query) {
+                        header('Location: login.php');
+                        exit;
+                    } else {
+                        echo "Fehler beim Registrieren: " . mysqli_error($config);
+                    }
                 } else {
-                    echo "Fehler beim Registrieren: " . mysqli_error($config);
+                    echo "<br>password stimmt nicht überein";
+                    echo "<br>Reg abgebrochen";
                 }
             } else {
-                echo "<br>password stimmt nicht überein";
-                echo "<br>Reg abgebrochen";
+                echo "<br>email und/oder username bereits registriert, Reg fehlgeschlagen";
             }
-        } else {
-            echo "<br>email und/oder username bereits registriert, Reg fehlgeschlagen";
         }
     }
 ?>

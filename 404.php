@@ -1,11 +1,15 @@
 <?php
     session_start();
-    if(isset($_SESSION['username'])) {
-        echo '<a href="home.php">zurück</a><br>';
-    } else {
-        echo "Session nicht gestartet...";
-        echo '<a href="index.php">zur Hauptseite</a><br>';
+
+    function linkanzeigen() {
+        if(isset($_SESSION['username'])) {
+            return '<a href="home.php">zurück</a><br>';
+        } else {
+            return 'Session nicht gestartet... <br><a href="index.php">zur Hauptseite</a><br>';
+        }
     }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -22,6 +26,7 @@
         <div>
             <h1>404 - ERROR!</h1>
             <h3>Diese Seite existiert nicht.</h3>
+            <?php echo linkanzeigen(); ?>
         </div>
 </body>
 

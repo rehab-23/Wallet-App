@@ -1,28 +1,26 @@
 <?php
     include 'Config.php';
     
-    if(isset($_POST['login_btn'])) {
-        $email= $_POST['email'];
-        $passwordeingabe= $_POST['passwordeingabe'];
+    function einloggen($config) {
+        if(isset($_POST['login_btn'])) {
+            $email= $_POST['email'];
+            $passwordeingabe= $_POST['passwordeingabe'];
 
-        $select= "SELECT username, email, password FROM users WHERE email= '$email'";
-        $query= mysqli_query($config, $select);
-        //daten als array
-        $fetch= mysqli_fetch_assoc($query);
-        
-        //var_dump($fetch);
+            $select= "SELECT username, email, password FROM users WHERE email= '$email'";
+            $query= mysqli_query($config, $select);
+            //daten als array
+            $fetch= mysqli_fetch_assoc($query);
 
-        
-
-        if($fetch) {
-            $pwverify= password_verify($passwordeingabe, $fetch['password']);
-            var_dump($pwverify);
-            session_start();
-            $_SESSION['username'] = $fetch['username'];
-            header('location:home.php');
-            exit;
-        } else {
-            echo "invalid email/password";
+            if($fetch) {
+                $pwverify= password_verify($passwordeingabe, $fetch['password']);
+                var_dump($pwverify);
+                session_start();
+                $_SESSION['username'] = $fetch['username'];
+                header('location:home.php');
+                exit;
+            } else {
+                echo "invalid email/password";
+            }
         }
     }
 ?>
