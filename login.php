@@ -1,3 +1,32 @@
+<?php
+    include 'Config.php';
+    
+    if(isset($_POST['login_btn'])) {
+        $email= $_POST['email'];
+        $passwordeingabe= $_POST['passwordeingabe'];
+
+        $select= "SELECT username, email, password FROM users WHERE email= '$email'";
+        $query= mysqli_query($config, $select);
+        //daten als array
+        $fetch= mysqli_fetch_assoc($query);
+        
+        //var_dump($fetch);
+
+        
+
+        if($fetch) {
+            $pwverify= password_verify($passwordeingabe, $fetch['password']);
+            var_dump($pwverify);
+            session_start();
+            $_SESSION['username'] = $fetch['username'];
+            header('location:home.php');
+            exit;
+        } else {
+            echo "invalid email/password";
+        }
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,36 +46,6 @@
                 <input type="password" name="passwordeingabe" placeholder="password" required=""><br><br>
                 <input type="submit" name="login_btn" value="login"><br><br>
             </form>
-
-            <?php
-                include 'Config.php';
-                
-                if(isset($_POST['login_btn'])) {
-                    $email= $_POST['email'];
-                    $passwordeingabe= $_POST['passwordeingabe'];
-
-                    $select= "SELECT username, email, password FROM users WHERE email= '$email'";
-                    $query= mysqli_query($config, $select);
-                    //daten als array
-                    $fetch= mysqli_fetch_assoc($query);
-                    
-                    //var_dump($fetch);
-
-                    
-
-                    if($fetch) {
-                        $pwverify= password_verify($passwordeingabe, $fetch['password']);
-                        var_dump($pwverify);
-                        session_start();
-                        $_SESSION['username'] = $fetch['username'];
-                        header('location:home.php');
-                        exit;
-                    } else {
-                        echo "invalid email/password";
-                    }
-                }
-            ?>
-
             <p><a href="index.php">zur Hauptseite</a></p>
         </div>
 </body>

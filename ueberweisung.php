@@ -1,6 +1,29 @@
 <?php
     include 'Config.php';
     session_start();
+
+    //code;         
+    if(isset($_POST['senden_btn'])) {
+    
+        $username_sender= $_SESSION['username'];
+        $username_empfaenger= $_POST['name'];
+        $betrag= $_POST['betrag'];
+        $verwendungszweck= $_POST['verwendungszweck'];
+        $datum = date("Y-m-d H:i:s");
+        
+        //Update Guthaben Sender in Users
+        $sql= "UPDATE users SET guthaben = guthaben - $betrag WHERE username = '$username_sender'";
+        $result= mysqli_query($config, $sql);
+
+
+        //Update Guthaben Empfaenger in Users
+        $sql= "UPDATE users SET guthaben = guthaben + $betrag WHERE username = '$username_empfaenger'";
+        $result= mysqli_query($config, $sql);
+  
+        //Erstelle neue Transaktion in transaktionen
+        $sql= "INSERT INTO transaktionen (username_sender, username_empfaenger, betrag, datum, verwendungszweck) VALUES ('$username_sender', '$username_empfaenger', '$betrag', '$datum', '$verwendungszweck')";
+        $result= mysqli_query($config, $sql);
+    }
 ?>
 
 <!DOCTYPE html>
@@ -29,28 +52,3 @@
 </body>
 
 </html>
-
-<?php
-    //code;         
-    if(isset($_POST['senden_btn'])) {
-    
-        $username_sender= $_SESSION['username'];
-        $username_empfaenger= $_POST['name'];
-        $betrag= $_POST['betrag'];
-        $verwendungszweck= $_POST['verwendungszweck'];
-        $datum = date("Y-m-d H:i:s");
-        
-        //Update Guthaben Sender in Users
-        $sql= "UPDATE users SET guthaben = guthaben - $betrag WHERE username = '$username_sender'";
-        $result= mysqli_query($config, $sql);
-
-
-        //Update Guthaben Empfaenger in Users
-        $sql= "UPDATE users SET guthaben = guthaben + $betrag WHERE username = '$username_empfaenger'";
-        $result= mysqli_query($config, $sql);
-  
-        //Erstelle neue Transaktion in transaktionen
-        $sql= "INSERT INTO transaktionen (username_sender, username_empfaenger, betrag, datum, verwendungszweck) VALUES ('$username_sender', '$username_empfaenger', '$betrag', '$datum', '$verwendungszweck')";
-        $result= mysqli_query($config, $sql);
-    }
-?>
