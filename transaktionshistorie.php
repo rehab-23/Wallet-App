@@ -44,6 +44,8 @@
         } else {
             $html_output .= "<p>Keine Transaktionen gefunden</p>";
         }
+
+        return $html_output;
     }
 ?>
 
@@ -64,8 +66,7 @@
             <form action="" method="POST">
                 <div id="transaktionshistorie">
                     <?php
-                        transaktionshistorieanzeigen($config);
-                        echo $html_output;     
+                        echo transaktionshistorieanzeigen($config);
                     ?>
                 </div>
             </form>

@@ -2,13 +2,17 @@
     include 'Config.php';
     session_start();
 
-    if(isset($_SESSION['username'])) {
-        echo "Welcome, ".$_SESSION['username']." !";
-    } else {
-        echo "Session nicht gestartet";
-        header('location:login.php');
-        exit;
+    function welcomemessage() {
+        //code;
+        if(isset($_SESSION['username'])) {
+            echo "Welcome, ".$_SESSION['username']." !";
+        } else {
+            echo "Session nicht gestartet";
+            header('location:login.php');
+            exit;
+        }
     }
+
 
 
     //GUTHABEN DES USERS ABFRAGEN UND AUSGEBEN
@@ -74,6 +78,7 @@
     <div style="display: flex; align-items: center; justify-content: center;">
         <div>
             <h1>- Home -</h1>
+            <?php welcomemessage(); ?>
             <form method="post">
                 <button type="submit" name="loeschbutton">Account dauerhaft löschen</button>
             </form>
