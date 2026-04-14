@@ -3,7 +3,6 @@
     session_start();
 
     if(isset($_SESSION['username'])) {
-        //code;
         echo "Welcome, ".$_SESSION['username']." !";
     } else {
         echo "Session nicht gestartet";
@@ -13,45 +12,51 @@
 
 
     //GUTHABEN DES USERS ABFRAGEN UND AUSGEBEN
-    $username= $_SESSION['username'];
     //Username vergleichen aus Session
     //Aktuellen guthaben-Wert Abfragen und ausgeben
-    $sql= "SELECT guthaben FROM users WHERE username = '$username'";
-    $result= mysqli_query($config, $sql);
-    $row= mysqli_num_rows($result); 
-        
-    //ggf. Fehlermeldung ausgeben
-    if(!$result) {
-        die("SQL-Fehler: " . mysqli_error($config));
-    }
-
-    if($row == 1) {
-        $fetch = mysqli_fetch_assoc($result);
-        $guthaben = $fetch['guthaben'];
-        echo $guthaben;
-    } else {
-        echo "<br>!ERROR - Guthaben nicht gefunden";
-    }
-
-
-    if(isset($_POST['loeschbutton'])) {
-        $getusername = $_SESSION['username'];
-
-        $select= "DELETE FROM users WHERE username= '$getusername'";
-
-        $query= mysqli_query($config, $select);
-        $row= mysqli_num_rows($query);
-        $fetch= mysqli_fetch_array($query);
+    function guthabenabfrage($config) {
+        $username= $_SESSION['username'];
+        $sql= "SELECT guthaben FROM users WHERE username = '$username'";
+        $result= mysqli_query($config, $sql);
+        $row= mysqli_num_rows($result); 
+            
+        //ggf. Fehlermeldung ausgeben
+        if(!$result) {
+            die("SQL-Fehler: " . mysqli_error($config));
+        }
 
         if($row == 1) {
-            session_unset();
-            session_destroy();
-            header("location: login.php");
-            exit;
+            $fetch = mysqli_fetch_assoc($result);
+            $guthaben = $fetch['guthaben'];
+            echo $guthaben;
         } else {
-            echo "username existiert nicht in datenbank";
+            echo "<br>!ERROR - Guthaben nicht gefunden";
         }
     }
+
+
+    function loeschbuttonausfuehren($config) {
+        if(isset($_POST['loeschbutton'])) {
+            $getusername = $_SESSION['username'];
+
+            $select= "DELETE FROM users WHERE username= '$getusername'";
+
+            $query= mysqli_query($config, $select);
+            $row= mysqli_num_rows($query);
+            $fetch= mysqli_fetch_array($query);
+
+            if($row == 1) {
+                session_unset();
+                session_destroy();
+                header("location: login.php");
+                exit;
+            } else {
+                echo "username existiert nicht in datenbank";
+            }
+        }
+    }
+
+    loeschbuttonausfuehren($config);
 ?>
 
 <br>
@@ -74,6 +79,7 @@
             </form>
 
             <b>Aktuelles Guthaben:</b>
+            <?php guthabenabfrage($config); ?>
             <p><a href="einzahlen.php">Einzahlung</a></p>
             <p><a href="auszahlen.php">Auszahlung</a></p>
             <p><a href="dashboard.php">Dashboard</a></p>

@@ -47,7 +47,7 @@
                 <p><input type="text" name="verwendungszweck" placeholder="verwendungszweck" required=""></p>
                 <p><input type="submit" name="senden_btn" value="senden"></p>
             </form>
-
+            <?php ueberweisungausfuehren($config); ?>
             <p><a href="home.php">zurück</a></p>
         </div>
 </body>

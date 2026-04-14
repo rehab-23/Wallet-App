@@ -23,6 +23,8 @@
             }
         }
     }
+
+    einloggen($config);
 ?>
 
 <!DOCTYPE html>

@@ -50,6 +50,7 @@
                 <p><input type="number" name="betrag" placeholder="betrag" step="0.01" min="0.01" required=""></p>
                 <p><input type="submit" name="ausfuehren_btn" value="ausführen"></p>
             </form>
+            <?php einzahlung($config); ?>
             <p><a href="home.php">zurück</a></p>
         </div>
 </body>

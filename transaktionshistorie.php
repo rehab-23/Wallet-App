@@ -63,7 +63,8 @@
 
             <form action="" method="POST">
                 <div id="transaktionshistorie">
-                    <?php 
+                    <?php
+                        transaktionshistorieanzeigen($config);
                         echo $html_output;     
                     ?>
                 </div>

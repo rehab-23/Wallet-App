@@ -37,6 +37,8 @@
             }
         }
     }
+
+    registrieren($config);
 ?>
 
 <!DOCTYPE html>
