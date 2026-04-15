@@ -2,7 +2,7 @@
     include 'Config.php';
     include 'funktionen.php';
 
-    registrieren($config);
+    echo registrieren($config);
 ?>
 
 <!DOCTYPE html>

@@ -69,11 +69,9 @@
     }
 
     function welcomemessage() {
-        //code;
         if(isset($_SESSION['username'])) {
-            echo "Welcome, ".$_SESSION['username']." !";
+            return "Welcome, ".$_SESSION['username']." !";
         } else {
-            echo "Session nicht gestartet";
             header('location:login.php');
             exit;
         }
@@ -98,9 +96,9 @@
         if($row == 1) {
             $fetch = mysqli_fetch_assoc($result);
             $guthaben = $fetch['guthaben'];
-            echo $guthaben;
+            return $guthaben;
         } else {
-            echo "<br>!ERROR - Guthaben nicht gefunden";
+            return "<br>!ERROR - Guthaben nicht gefunden";
         }
     }
 
@@ -121,7 +119,7 @@
                 header("location: login.php");
                 exit;
             } else {
-                echo "username existiert nicht in datenbank";
+                return "username existiert nicht in datenbank";
             }
         }
     }
@@ -165,7 +163,7 @@
 
             if($row == 0) {
                 //2. kontrolle: passwort prüfen
-                echo "<br>Reg wird eingeleitet";
+                return "<br>Reg wird eingeleitet";
                 if($password_wdh == $password) {
                     $select= "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password_hashed')";
                     $query= mysqli_query($config, $select);
@@ -174,14 +172,13 @@
                         header('Location: login.php');
                         exit;
                     } else {
-                        echo "Fehler beim Registrieren: " . mysqli_error($config);
+                        return "Fehler beim Registrieren: " . mysqli_error($config);
                     }
                 } else {
-                    echo "<br>password stimmt nicht überein";
-                    echo "<br>Reg abgebrochen";
+                    return "<br>password stimmt nicht überein, Registrierung abgebrochen";
                 }
             } else {
-                echo "<br>email und/oder username bereits registriert, Reg fehlgeschlagen";
+                return "<br>email und/oder username bereits registriert, Reg fehlgeschlagen";
             }
         }
     }

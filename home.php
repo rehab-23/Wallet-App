@@ -3,7 +3,7 @@
     include 'Config.php';
     include 'funktionen.php';
 
-    loeschbuttonausfuehren($config);
+    echo loeschbuttonausfuehren($config);
 ?>
 
 <br>
@@ -21,13 +21,13 @@
     <div style="display: flex; align-items: center; justify-content: center;">
         <div>
             <h1>- Home -</h1>
-            <?php welcomemessage(); ?>
+            <?php echo welcomemessage(); ?>
             <form method="post">
                 <button type="submit" name="loeschbutton">Account dauerhaft löschen</button>
             </form>
 
             <b>Aktuelles Guthaben:</b>
-            <?php guthabenabfrage($config); ?>
+            <?php echo guthabenabfrage($config); ?>
             <p><a href="einzahlen.php">Einzahlung</a></p>
             <p><a href="auszahlen.php">Auszahlung</a></p>
             <p><a href="dashboard.php">Dashboard</a></p>
