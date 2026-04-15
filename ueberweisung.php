@@ -23,6 +23,8 @@
             //Erstelle neue Transaktion in transaktionen
             $sql= "INSERT INTO transaktionen (username_sender, username_empfaenger, betrag, datum, verwendungszweck) VALUES ('$username_sender', '$username_empfaenger', '$betrag', '$datum', '$verwendungszweck')";
             $result= mysqli_query($config, $sql);
+
+            return "Überweisung erfolgreich ausgeführt";
         }
     }
 ?>
@@ -47,7 +49,7 @@
                 <p><input type="text" name="verwendungszweck" placeholder="verwendungszweck" required=""></p>
                 <p><input type="submit" name="senden_btn" value="senden"></p>
             </form>
-            <?php ueberweisungausfuehren($config); ?>
+            <?php echo ueberweisungausfuehren($config); ?>
             <p><a href="home.php">zurück</a></p>
         </div>
 </body>

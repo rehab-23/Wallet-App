@@ -25,9 +25,9 @@
                 $guthaben_neu = $guthaben_alt + $betrag;
                 $sql = "UPDATE users SET guthaben='$guthaben_neu' WHERE username='$username'";
                 $result = mysqli_query($config, $sql);
-                echo "<br>Einzahlung erfolgreich";
+                return "<br>Einzahlung erfolgreich";
             } else {
-                echo "<br>!ERROR - Benutzer nicht gefunden";
+                return "<br>!ERROR - Benutzer nicht gefunden";
             }
         }
     }
@@ -50,7 +50,7 @@
                 <p><input type="number" name="betrag" placeholder="betrag" step="0.01" min="0.01" required=""></p>
                 <p><input type="submit" name="ausfuehren_btn" value="ausführen"></p>
             </form>
-            <?php einzahlung($config); ?>
+            <?php echo einzahlung($config); ?>
             <p><a href="home.php">zurück</a></p>
         </div>
 </body>

@@ -19,12 +19,12 @@
                 header('location:home.php');
                 exit;
             } else {
-                echo "invalid email/password";
+                return "email und/oder passwort ungültig";
             }
         }
     }
 
-    einloggen($config);
+    echo einloggen($config);
 ?>
 
 <!DOCTYPE html>
