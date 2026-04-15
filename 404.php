@@ -1,15 +1,6 @@
 <?php
     session_start();
-
-    function linkanzeigen() {
-        if(isset($_SESSION['username'])) {
-            return '<a href="home.php">zurück</a><br>';
-        } else {
-            return 'Session nicht gestartet... <br><a href="index.php">zur Hauptseite</a><br>';
-        }
-    }
-
-
+    include 'funktionen.php';
 ?>
 
 <!DOCTYPE html>

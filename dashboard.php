@@ -1,3 +1,9 @@
+<?php
+    session_start();
+    include 'Config.php';
+    include 'funktionen.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
