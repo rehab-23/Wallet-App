@@ -7,10 +7,10 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
-<?php include 'header.php'; ?>
+<?php include 'head.php'; ?>
 
 <body>
+    <?php include 'header.php'; ?>
     <div style="display: flex; align-items: center; justify-content: center;">
         <div>
             <h1>- Login -</h1>
@@ -22,6 +22,8 @@
             </form>
             <p><a href="index.php">zur Hauptseite</a></p>
         </div>
+    </div>
+    <?php include 'footer.php'; ?>
 </body>
 
 </html>

@@ -1,5 +1,5 @@
-<header>
+<footer class="app-footer">
     <div style="display: flex; align-items: center; justify-content: center;">
-        <h1>Wallet-App</h1>
+        <p>Version 1.0</p>
     </div>
-</header>
+</footer>

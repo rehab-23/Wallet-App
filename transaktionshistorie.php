@@ -6,10 +6,10 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
-<?php include 'header.php'; ?>
+<?php include 'head.php'; ?>
 
 <body>
+    <?php include 'header.php'; ?>
     <div style="display: flex; align-items: center; justify-content: center;">
         <div>
             <h1>- Transaktionshistorie -</h1>
@@ -24,6 +24,8 @@
 
             <p><a href="home.php">zurück</a></p>
         </div>
+    </div>
+    <?php include 'footer.php'; ?>
 </body>
 
 </html>
