@@ -25,16 +25,17 @@
 
             <b>Aktuelles Guthaben:</b>
             <?php 
-                echo guthabenabfrage($config);
-
-                echo buttonblau("einzahlen.php", "Einzahlung");
-                echo buttonblau("auszahlen.php", "Auszahlung");
-                echo buttonblau("dashboard.php", "Dashboard");
-                echo buttonblau("ueberweisung.php", "Ueberweisung");
-                echo buttonblau("transaktionshistorie.php", "Transaktionshistorie"); 
-            ?>
+                echo guthabenabfrage($config); ?>
             <br>
-            <p><button type="button" class="btn btn-danger" name="logoutbutton">Logout</button></p>
+            <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+                <a class="btn btn-primary" href="einzahlen.php">Einzahlung</a>
+                <a class="btn btn-primary" href="auszahlen.php">Auszahlung</a>
+                <a class="btn btn-primary" href="dashboard.php">Dashboard</a>
+                <a class="btn btn-primary" href="ueberweisung.php">Überweisung</a>
+                <a class="btn btn-primary" href="transaktionshistorie.php">Transaktionshistorie</a>
+            </div>
+            <br><br><br><br>
+            <p><a class="btn btn-danger" href="logout.php">Logout</a></p>
         </div>
     </div>
     <?php include 'footer.php'; ?>

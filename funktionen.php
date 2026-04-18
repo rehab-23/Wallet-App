@@ -255,7 +255,7 @@
     }
 
     function buttonblau($seitenlink, $bezeichnung) {
-    return "<p><a class='btn btn-primary' href='$seitenlink' role='button'>$bezeichnung</a></p>";
+    return "<p><a class='btn btn-primary' href='$seitenlink'>$bezeichnung</a></p>";
     }
 
 
