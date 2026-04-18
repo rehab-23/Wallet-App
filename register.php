@@ -24,7 +24,7 @@
                 <input type="submit" name="register_btn" value="registrieren"><br><br>
             </form>
             <br>
-            <p><a href="index.php">zur Hauptseite</a><br></p>
+            <?php echo buttonblau("index.php", "zurück"); ?>
         </div>
     </div>
     <?php include 'footer.php'; ?>

@@ -21,8 +21,7 @@
                     ?>
                 </div>
             </form>
-
-            <p><a href="home.php">zurück</a></p>
+            <?php echo buttonblau("home.php", "zurück"); ?>
         </div>
     </div>
     <?php include 'footer.php'; ?>

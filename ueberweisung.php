@@ -20,8 +20,10 @@
                 <p><input type="text" name="verwendungszweck" placeholder="verwendungszweck" required=""></p>
                 <p><input type="submit" name="senden_btn" value="senden"></p>
             </form>
-            <?php echo ueberweisungausfuehren($config); ?>
-            <p><a href="home.php">zurück</a></p>
+            <?php 
+                echo ueberweisungausfuehren($config);
+                echo buttonblau("home.php", "zurück"); 
+            ?>
         </div>
     </div>
     <?php include 'footer.php'; ?>

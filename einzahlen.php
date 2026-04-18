@@ -17,8 +17,10 @@
                 <p><input type="number" name="betrag" placeholder="betrag" step="0.01" min="0.01" required=""></p>
                 <p><input type="submit" name="ausfuehren_btn" value="ausführen"></p>
             </form>
-            <?php echo einzahlung($config); ?>
-            <p><a href="home.php">zurück</a></p>
+            <?php 
+                echo einzahlung($config);
+                echo buttonblau("home.php", "zurück"); 
+            ?>
         </div>
     </div>
     <?php include 'footer.php'; ?>

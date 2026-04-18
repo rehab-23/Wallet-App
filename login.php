@@ -20,7 +20,7 @@
                 <input type="password" name="passwordeingabe" placeholder="password" required=""><br><br>
                 <input type="submit" name="login_btn" value="login"><br><br>
             </form>
-            <p><a href="index.php">zur Hauptseite</a></p>
+            <?php echo buttonblau("index.php", "zurück"); ?>
         </div>
     </div>
     <?php include 'footer.php'; ?>
