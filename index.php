@@ -8,8 +8,10 @@
     <div style="display: flex; align-items: center; justify-content: center;">
         <div>
             <h1>- Landingpage -</h1>
-            <p><a href="register.php">Zur Registrierung</a></p>
-            <p><a href="login.php">Zum Login</a></p>
+            <?php 
+                echo buttonblau("register.php", "Registrierung");
+                echo buttonblau("login.php", "LogIn");
+            ?>
         </div>
     </div>
     <?php include 'footer.php'; ?>

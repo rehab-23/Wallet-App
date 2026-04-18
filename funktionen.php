@@ -253,4 +253,10 @@
             return "Überweisung erfolgreich ausgeführt";
         }
     }
+
+    function buttonblau($seitenlink, $bezeichnung) {
+    return "<p><a class='btn btn-primary' href='$seitenlink' role='button'>$bezeichnung</a></p>";
+    }
+
+
 ?>

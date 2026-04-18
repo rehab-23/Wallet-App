@@ -20,18 +20,21 @@
             <h1>- Home -</h1>
             <?php echo welcomemessage(); ?>
             <form method="post">
-                <button type="submit" name="loeschbutton">Account dauerhaft löschen</button>
+                <button type="submit" class="btn btn-danger" name="loeschbutton">Account dauerhaft löschen</button>
             </form>
 
             <b>Aktuelles Guthaben:</b>
-            <?php echo guthabenabfrage($config); ?>
-            <p><a href="einzahlen.php">Einzahlung</a></p>
-            <p><a href="auszahlen.php">Auszahlung</a></p>
-            <p><a href="dashboard.php">Dashboard</a></p>
-            <p><a href="ueberweisung.php">Ueberweisung</a></p>
-            <p><a href="transaktionshistorie.php">Transaktionshistorie</a></p>
+            <?php 
+                echo guthabenabfrage($config);
+
+                echo buttonblau("einzahlen.php", "Einzahlung");
+                echo buttonblau("auszahlen.php", "Auszahlung");
+                echo buttonblau("dashboard.php", "Dashboard");
+                echo buttonblau("ueberweisung.php", "Ueberweisung");
+                echo buttonblau("transaktionshistorie.php", "Transaktionshistorie"); 
+            ?>
             <br>
-            <p><a href="logout.php">Logout</a></p>
+            <p><button type="button" class="btn btn-danger" name="logoutbutton">Logout</button></p>
         </div>
     </div>
     <?php include 'footer.php'; ?>
