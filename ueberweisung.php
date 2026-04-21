@@ -14,11 +14,20 @@
         <div>
             <h1>- Überweisung -</h1>
             <form action="" method="POST">
-                <p><label for="">Überweisungsformular ausfüllen:</label><br></p>
-                <p><input type="username" name="name" placeholder="username empfaenger" required=""></p>
-                <p><input type="number" name="betrag" placeholder="betrag" step="0.01" min="0.01" required=""></p>
-                <p><input type="text" name="verwendungszweck" placeholder="verwendungszweck" required=""></p>
-                <p><input type="submit" name="senden_btn" value="senden"></p>
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username d. Empfängers eingeben</label>
+                    <input type="username" class="form-control" name="name" placeholder="..." required="">
+                </div>
+                <div class="mb-3">
+                    <label for="betrag" class="form-label">Überweisungsbetrag eingeben</label>
+                    <input type="number" class="form-control" name="betrag" placeholder="..." step="0.01" min="0.01"
+                        required="">
+                </div>
+                <div class="mb-3">
+                    <label for="verwendungszweck" class="form-label">Verwendungszweck eingeben</label>
+                    <input type="text" class="form-control" name="verwendungszweck" placeholder="..." required="">
+                </div>
+                <input type="submit" class="btn btn-primary" name="senden_btn" value="senden"></input><br><br>
             </form>
             <?php 
                 echo ueberweisungausfuehren($config);
