@@ -12,8 +12,7 @@
     <?php include 'header.php'; ?>
     <div style="display: flex; align-items: center; justify-content: center;">
         <div>
-            <h1>- Transaktionshistorie -</h1>
-
+            <h1 style="text-align: center;">- Transaktionshistorie -</h1>
             <form action="" method="POST">
                 <div id="transaktionshistorie">
                     <?php
@@ -21,6 +20,7 @@
                     ?>
                 </div>
             </form>
+            <br>
             <?php echo buttonblau("home.php", "zurück"); ?>
         </div>
     </div>
