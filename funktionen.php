@@ -1,5 +1,4 @@
 <?php 
-    //code;
     function linkanzeigen() {
         if(isset($_SESSION['username'])) {
             return '<a href="home.php">zurück</a><br>';
@@ -77,8 +76,6 @@
         }
     }
 
-
-
     //GUTHABEN DES USERS ABFRAGEN UND AUSGEBEN
     //Username vergleichen aus Session
     //Aktuellen guthaben-Wert Abfragen und ausgeben
@@ -101,7 +98,6 @@
             return "<br>!ERROR - Guthaben nicht gefunden";
         }
     }
-
 
     function loeschbuttonausfuehren($config) {
         if(isset($_POST['loeschbutton'])) {
@@ -163,7 +159,6 @@
 
             if($row == 0) {
                 //2. kontrolle: passwort prüfen
-                return "<br>Reg wird eingeleitet";
                 if($password_wdh == $password) {
                     $select= "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password_hashed')";
                     $query= mysqli_query($config, $select);
@@ -257,6 +252,5 @@
     function buttonblau($seitenlink, $bezeichnung) {
     return "<p><a class='btn btn-primary' href='$seitenlink'>$bezeichnung</a></p>";
     }
-
 
 ?>

@@ -17,8 +17,8 @@
             <form action="" method="POST">
                 <div class="mb-3">
                     <label for="betrag" class="form-label">Betrag eingeben</label>
-                    <input type="number" class="form-control" id="betrag" aria-describedby="emailHelp" name="betrag"
-                        placeholder="einzahlungsbetrag" required="">
+                    <input type="number" class="form-control" id="betrag" name="betrag" placeholder="..." step="0.01"
+                        min="0.01" required="">
                 </div>
                 <input type="submit" class="btn btn-primary" name="ausfuehren_btn" value="ausführen"></input><br><br>
             </form>
