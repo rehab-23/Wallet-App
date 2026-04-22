@@ -1,72 +1,4 @@
 <?php
-function linkanzeigen()
-{
-    if (isset($_SESSION['username'])) {
-        return '<a href="home.php">zurück</a><br>';
-    } else {
-        return 'Session nicht gestartet... <br><a href="index.php">zur Hauptseite</a><br>';
-    }
-}
-
-
-function auszahlung($config)
-{
-    if (isset($_POST['ausfuehren_btn'])) {
-        $username = $_SESSION['username'];
-        $betrag = $_POST['betrag'];
-        //Guthaben + Betrag verrechnen
-        $sql = "SELECT guthaben FROM users WHERE username = '$username'";
-        $result = mysqli_query($config, $sql);
-        $row = mysqli_num_rows($result);
-
-        //ggf. Fehlermeldung ausgeben
-        if (!$result) {
-            die("SQL-Fehler: " . mysqli_error($config));
-        }
-
-        if ($row == 1) {
-            $fetch = mysqli_fetch_assoc($result);
-            $guthaben_alt = $fetch['guthaben'];
-            $guthaben_neu = $guthaben_alt - $betrag;
-            $sql = "UPDATE users SET guthaben='$guthaben_neu' WHERE username='$username'";
-            $result = mysqli_query($config, $sql);
-            return "<br>Auszahlung erfolgreich";
-        } else {
-            return "<br>!ERROR - Benutzer nicht gefunden";
-        }
-    }
-}
-
-
-function einzahlung($config)
-{
-    if (isset($_POST['ausfuehren_btn'])) {
-        $username = $_SESSION['username'];
-        $betrag = $_POST['betrag'];
-        //Guthaben + Betrag verrechnen
-        $sql = "SELECT guthaben FROM users WHERE username = '$username'";
-        $result = mysqli_query($config, $sql);
-        $row = mysqli_num_rows($result);
-
-        //ggf. Fehlermeldung ausgeben
-        if (!$result) {
-            die("SQL-Fehler: " . mysqli_error($config));
-        }
-
-        if ($row == 1) {
-            $fetch = mysqli_fetch_assoc($result);
-            $guthaben_alt = $fetch['guthaben'];
-            $guthaben_neu = $guthaben_alt + $betrag;
-            $sql = "UPDATE users SET guthaben='$guthaben_neu' WHERE username='$username'";
-            $result = mysqli_query($config, $sql);
-            return "<br>Einzahlung erfolgreich";
-        } else {
-            return "<br>!ERROR - Benutzer nicht gefunden";
-        }
-    }
-}
-
-
 function welcomemessage()
 {
     if (isset($_SESSION['username'])) {
@@ -78,25 +10,12 @@ function welcomemessage()
 }
 
 
-function guthabenabfrage($config)
+function linkanzeigen()
 {
-    //Aktuellen guthaben-Wert Abfragen und ausgeben
-    $username = $_SESSION['username'];
-    $sql = "SELECT guthaben FROM users WHERE username = '$username'";
-    $result = mysqli_query($config, $sql);
-    $row = mysqli_num_rows($result);
-
-    //ggf. Fehlermeldung ausgeben
-    if (!$result) {
-        die("SQL-Fehler: " . mysqli_error($config));
-    }
-
-    if ($row == 1) {
-        $fetch = mysqli_fetch_assoc($result);
-        $guthaben = $fetch['guthaben'];
-        return $guthaben;
+    if (isset($_SESSION['username'])) {
+        return '<a href="home.php">zurück</a><br>';
     } else {
-        return "<br>!ERROR - Guthaben nicht gefunden";
+        return 'Session nicht gestartet... <br><a href="index.php">zur Hauptseite</a><br>';
     }
 }
 
@@ -122,27 +41,9 @@ function loeschbuttonausfuehren($config)
 }
 
 
-function einloggen($config)
+function buttonblau($seitenlink, $bezeichnung)
 {
-    if (isset($_POST['login_btn'])) {
-        $email = $_POST['email'];
-        $passwordeingabe = $_POST['passwordeingabe'];
-        $select = "SELECT username, email, password FROM users WHERE email= '$email'";
-        $query = mysqli_query($config, $select);
-        //daten als assoziatives array speichern
-        $fetch = mysqli_fetch_assoc($query);
-
-        if ($fetch) {
-            $pwverify = password_verify($passwordeingabe, $fetch['password']);
-            var_dump($pwverify);
-            session_start();
-            $_SESSION['username'] = $fetch['username'];
-            header('location:home.php');
-            exit;
-        } else {
-            return "email und/oder passwort ungültig";
-        }
-    }
+    return "<p><a class='btn btn-primary' href='$seitenlink'>$bezeichnung</a></p>";
 }
 
 
@@ -183,6 +84,132 @@ function registrieren($config)
 }
 
 
+function einloggen($config)
+{
+    if (isset($_POST['login_btn'])) {
+        $email = $_POST['email'];
+        $passwordeingabe = $_POST['passwordeingabe'];
+        $select = "SELECT username, email, password FROM users WHERE email= '$email'";
+        $query = mysqli_query($config, $select);
+        //daten als assoziatives array speichern
+        $fetch = mysqli_fetch_assoc($query);
+
+        if ($fetch) {
+            $pwverify = password_verify($passwordeingabe, $fetch['password']);
+            var_dump($pwverify);
+            session_start();
+            $_SESSION['username'] = $fetch['username'];
+            header('location:home.php');
+            exit;
+        } else {
+            return "email und/oder passwort ungültig";
+        }
+    }
+}
+
+
+function guthabenabfrage($config)
+{
+    $username = $_SESSION['username'];
+    $sql = "SELECT guthaben FROM users WHERE username = '$username'";
+    $result = mysqli_query($config, $sql);
+    $row = mysqli_num_rows($result);
+
+    if (!$result) {
+        die("SQL-Fehler: " . mysqli_error($config));
+    }
+
+    if ($row == 1) {
+        $fetch = mysqli_fetch_assoc($result);
+        $guthaben = $fetch['guthaben'];
+        return $guthaben;
+    } else {
+        return "<br>!ERROR - Guthaben nicht gefunden";
+    }
+}
+
+
+function einzahlung($config)
+{
+    if (isset($_POST['ausfuehren_btn'])) {
+        $username = $_SESSION['username'];
+        $betrag = $_POST['betrag'];
+        //Guthaben + Betrag verrechnen
+        $sql = "SELECT guthaben FROM users WHERE username = '$username'";
+        $result = mysqli_query($config, $sql);
+        $row = mysqli_num_rows($result);
+
+        //ggf. Fehlermeldung ausgeben
+        if (!$result) {
+            die("SQL-Fehler: " . mysqli_error($config));
+        }
+
+        if ($row == 1) {
+            $fetch = mysqli_fetch_assoc($result);
+            $guthaben_alt = $fetch['guthaben'];
+            $guthaben_neu = $guthaben_alt + $betrag;
+            $sql = "UPDATE users SET guthaben='$guthaben_neu' WHERE username='$username'";
+            $result = mysqli_query($config, $sql);
+            return "<br>Einzahlung erfolgreich";
+        } else {
+            return "<br>!ERROR - Benutzer nicht gefunden";
+        }
+    }
+}
+
+
+function auszahlung($config)
+{
+    if (isset($_POST['ausfuehren_btn'])) {
+        $username = $_SESSION['username'];
+        $betrag = $_POST['betrag'];
+        //Guthaben + Betrag verrechnen
+        $sql = "SELECT guthaben FROM users WHERE username = '$username'";
+        $result = mysqli_query($config, $sql);
+        $row = mysqli_num_rows($result);
+
+        //ggf. Fehlermeldung ausgeben
+        if (!$result) {
+            die("SQL-Fehler: " . mysqli_error($config));
+        }
+
+        if ($row == 1) {
+            $fetch = mysqli_fetch_assoc($result);
+            $guthaben_alt = $fetch['guthaben'];
+            $guthaben_neu = $guthaben_alt - $betrag;
+            $sql = "UPDATE users SET guthaben='$guthaben_neu' WHERE username='$username'";
+            $result = mysqli_query($config, $sql);
+            return "<br>Auszahlung erfolgreich";
+        } else {
+            return "<br>!ERROR - Benutzer nicht gefunden";
+        }
+    }
+}
+
+
+function ueberweisungausfuehren($config)
+{
+    if (isset($_POST['senden_btn'])) {
+        $username_sender = $_SESSION['username'];
+        $username_empfaenger = $_POST['name'];
+        $betrag = $_POST['betrag'];
+        $verwendungszweck = $_POST['verwendungszweck'];
+        $datum = date("Y-m-d H:i:s");
+
+        $sql = "UPDATE users SET guthaben = guthaben - $betrag WHERE username = '$username_sender'";
+        $result = mysqli_query($config, $sql);
+
+        $sql = "UPDATE users SET guthaben = guthaben + $betrag WHERE username = '$username_empfaenger'";
+        $result = mysqli_query($config, $sql);
+
+        $sql = "INSERT INTO transaktionen (username_sender, username_empfaenger, betrag, datum, verwendungszweck) VALUES ('$username_sender', '$username_empfaenger', '$betrag', '$datum', '$verwendungszweck')";
+        $result = mysqli_query($config, $sql);
+
+        return "Überweisung erfolgreich ausgeführt";
+    }
+}
+
+
 function transaktionshistorieanzeigen($config)
 {
     $username_sender_session = $_SESSION['username'];
@@ -219,33 +246,4 @@ function transaktionshistorieanzeigen($config)
         $html_output .= "<p>Keine Transaktionen gefunden</p>";
     }
     return $html_output;
-}
-
-
-function ueberweisungausfuehren($config)
-{
-    if (isset($_POST['senden_btn'])) {
-        $username_sender = $_SESSION['username'];
-        $username_empfaenger = $_POST['name'];
-        $betrag = $_POST['betrag'];
-        $verwendungszweck = $_POST['verwendungszweck'];
-        $datum = date("Y-m-d H:i:s");
-
-        $sql = "UPDATE users SET guthaben = guthaben - $betrag WHERE username = '$username_sender'";
-        $result = mysqli_query($config, $sql);
-
-        $sql = "UPDATE users SET guthaben = guthaben + $betrag WHERE username = '$username_empfaenger'";
-        $result = mysqli_query($config, $sql);
-
-        $sql = "INSERT INTO transaktionen (username_sender, username_empfaenger, betrag, datum, verwendungszweck) VALUES ('$username_sender', '$username_empfaenger', '$betrag', '$datum', '$verwendungszweck')";
-        $result = mysqli_query($config, $sql);
-
-        return "Überweisung erfolgreich ausgeführt";
-    }
-}
-
-
-function buttonblau($seitenlink, $bezeichnung)
-{
-    return "<p><a class='btn btn-primary' href='$seitenlink'>$bezeichnung</a></p>";
 }
