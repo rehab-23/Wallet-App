@@ -20,12 +20,12 @@ function linkanzeigen()
 }
 
 
-function loeschbuttonausfuehren($config)
+function loeschbuttonausfuehren($conn)
 {
     if (isset($_POST['loeschbutton'])) {
         $getusername = $_SESSION['username'];
         $select = "DELETE FROM users WHERE username= '$getusername'";
-        $query = mysqli_query($config, $select);
+        $query = mysqli_query($conn, $select);
         $row = mysqli_num_rows($query);
         $fetch = mysqli_fetch_array($query);
 
@@ -47,7 +47,7 @@ function buttonblau($seitenlink, $bezeichnung)
 }
 
 
-function registrieren($config)
+function registrieren($conn)
 {
     if (isset($_POST['register_btn'])) {
         $username = $_POST['username'];
@@ -58,7 +58,7 @@ function registrieren($config)
 
         //1. kontrolle: email + username prüfen
         $select = "SELECT * FROM users WHERE email= '$email' OR username = '$username'";
-        $query = mysqli_query($config, $select);
+        $query = mysqli_query($conn, $select);
         $row = mysqli_num_rows($query);
         $fetch = mysqli_fetch_array($query);
 
@@ -66,13 +66,13 @@ function registrieren($config)
             //2. kontrolle: passwort prüfen
             if ($password_wdh == $password) {
                 $select = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password_hashed')";
-                $query = mysqli_query($config, $select);
+                $query = mysqli_query($conn, $select);
 
                 if ($query) {
                     header('Location: login.php');
                     exit;
                 } else {
-                    return "Fehler beim Registrieren: " . mysqli_error($config);
+                    return "Fehler beim Registrieren: " . mysqli_error($conn);
                 }
             } else {
                 return "<br>password stimmt nicht überein, Registrierung abgebrochen";
@@ -84,13 +84,13 @@ function registrieren($config)
 }
 
 
-function einloggen($config)
+function einloggen($conn)
 {
     if (isset($_POST['login_btn'])) {
         $email = $_POST['email'];
         $passwordeingabe = $_POST['passwordeingabe'];
         $select = "SELECT username, email, password FROM users WHERE email= '$email'";
-        $query = mysqli_query($config, $select);
+        $query = mysqli_query($conn, $select);
         //daten als assoziatives array speichern
         $fetch = mysqli_fetch_assoc($query);
 
@@ -108,15 +108,15 @@ function einloggen($config)
 }
 
 
-function guthabenabfrage($config)
+function guthabenabfrage($conn)
 {
     $username = $_SESSION['username'];
     $sql = "SELECT guthaben FROM users WHERE username = '$username'";
-    $result = mysqli_query($config, $sql);
+    $result = mysqli_query($conn, $sql);
     $row = mysqli_num_rows($result);
 
     if (!$result) {
-        die("SQL-Fehler: " . mysqli_error($config));
+        die("SQL-Fehler: " . mysqli_error($conn));
     }
 
     if ($row == 1) {
@@ -129,19 +129,19 @@ function guthabenabfrage($config)
 }
 
 
-function einzahlung($config)
+function einzahlung($conn)
 {
     if (isset($_POST['ausfuehren_btn'])) {
         $username = $_SESSION['username'];
         $betrag = $_POST['betrag'];
         //Guthaben + Betrag verrechnen
         $sql = "SELECT guthaben FROM users WHERE username = '$username'";
-        $result = mysqli_query($config, $sql);
+        $result = mysqli_query($conn, $sql);
         $row = mysqli_num_rows($result);
 
         //ggf. Fehlermeldung ausgeben
         if (!$result) {
-            die("SQL-Fehler: " . mysqli_error($config));
+            die("SQL-Fehler: " . mysqli_error($conn));
         }
 
         if ($row == 1) {
@@ -149,7 +149,7 @@ function einzahlung($config)
             $guthaben_alt = $fetch['guthaben'];
             $guthaben_neu = $guthaben_alt + $betrag;
             $sql = "UPDATE users SET guthaben='$guthaben_neu' WHERE username='$username'";
-            $result = mysqli_query($config, $sql);
+            $result = mysqli_query($conn, $sql);
             return "<br>Einzahlung erfolgreich";
         } else {
             return "<br>!ERROR - Benutzer nicht gefunden";
@@ -158,19 +158,19 @@ function einzahlung($config)
 }
 
 
-function auszahlung($config)
+function auszahlung($conn)
 {
     if (isset($_POST['ausfuehren_btn'])) {
         $username = $_SESSION['username'];
         $betrag = $_POST['betrag'];
         //Guthaben + Betrag verrechnen
         $sql = "SELECT guthaben FROM users WHERE username = '$username'";
-        $result = mysqli_query($config, $sql);
+        $result = mysqli_query($conn, $sql);
         $row = mysqli_num_rows($result);
 
         //ggf. Fehlermeldung ausgeben
         if (!$result) {
-            die("SQL-Fehler: " . mysqli_error($config));
+            die("SQL-Fehler: " . mysqli_error($conn));
         }
 
         if ($row == 1) {
@@ -178,7 +178,7 @@ function auszahlung($config)
             $guthaben_alt = $fetch['guthaben'];
             $guthaben_neu = $guthaben_alt - $betrag;
             $sql = "UPDATE users SET guthaben='$guthaben_neu' WHERE username='$username'";
-            $result = mysqli_query($config, $sql);
+            $result = mysqli_query($conn, $sql);
             return "<br>Auszahlung erfolgreich";
         } else {
             return "<br>!ERROR - Benutzer nicht gefunden";
@@ -187,7 +187,7 @@ function auszahlung($config)
 }
 
 
-function ueberweisungausfuehren($config)
+function ueberweisungausfuehren($conn)
 {
     if (isset($_POST['senden_btn'])) {
         $username_sender = $_SESSION['username'];
@@ -197,24 +197,24 @@ function ueberweisungausfuehren($config)
         $datum = date("Y-m-d H:i:s");
 
         $sql = "UPDATE users SET guthaben = guthaben - $betrag WHERE username = '$username_sender'";
-        $result = mysqli_query($config, $sql);
+        $result = mysqli_query($conn, $sql);
 
         $sql = "UPDATE users SET guthaben = guthaben + $betrag WHERE username = '$username_empfaenger'";
-        $result = mysqli_query($config, $sql);
+        $result = mysqli_query($conn, $sql);
 
         $sql = "INSERT INTO transaktionen (username_sender, username_empfaenger, betrag, datum, verwendungszweck) VALUES ('$username_sender', '$username_empfaenger', '$betrag', '$datum', '$verwendungszweck')";
-        $result = mysqli_query($config, $sql);
+        $result = mysqli_query($conn, $sql);
 
         return "Überweisung erfolgreich ausgeführt";
     }
 }
 
 
-function transaktionshistorieanzeigen($config)
+function transaktionshistorieanzeigen($conn)
 {
     $username_sender_session = $_SESSION['username'];
     $sql = "SELECT * FROM transaktionen WHERE username_sender = '$username_sender_session' OR username_empfaenger = '$username_sender_session'";
-    $result = mysqli_query($config, $sql);
+    $result = mysqli_query($conn, $sql);
     $html_output = "";
 
     //Daten aus Array $result als mysqli_result-Objekt auslesen

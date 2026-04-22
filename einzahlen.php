@@ -1,7 +1,7 @@
 <?php
-    session_start();
-    include 'Config.php';
-    include 'funktionen.php';
+session_start();
+include 'Config.php';
+include 'funktionen.php';
 ?>
 
 <!DOCTYPE html>
@@ -22,9 +22,9 @@
                 </div>
                 <input type="submit" class="btn btn-primary" name="ausfuehren_btn" value="ausführen"></input><br><br>
             </form>
-            <?php 
-                echo einzahlung($config);
-                echo buttonblau("home.php", "zurück"); 
+            <?php
+            echo einzahlung($conn);
+            echo buttonblau("home.php", "zurück");
             ?>
         </div>
     </div>

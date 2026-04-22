@@ -1,7 +1,7 @@
 <?php
-    session_start();
-    include 'Config.php';
-    include 'funktionen.php';
+session_start();
+include 'Config.php';
+include 'funktionen.php';
 ?>
 
 <!DOCTYPE html>
@@ -29,9 +29,9 @@
                 </div>
                 <input type="submit" class="btn btn-primary" name="senden_btn" value="senden"></input><br><br>
             </form>
-            <?php 
-                echo ueberweisungausfuehren($config);
-                echo buttonblau("home.php", "zurück"); 
+            <?php
+            echo ueberweisungausfuehren($conn);
+            echo buttonblau("home.php", "zurück");
             ?>
         </div>
     </div>

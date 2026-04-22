@@ -1,11 +1,12 @@
 <?php
-    include 'Config.php';
-    include 'funktionen.php';
-
-    echo einloggen($config);
+include 'Config.php';
+include 'funktionen.php';
+echo einloggen($conn);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <?php include 'head.php'; ?>
 
 <body>
