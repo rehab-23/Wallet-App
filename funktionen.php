@@ -111,21 +111,24 @@ function einloggen($conn)
 function guthabenabfrage($conn)
 {
     $username = $_SESSION['username'];
-    $sql = "SELECT guthaben FROM users WHERE username = '$username'";
-    $result = mysqli_query($conn, $sql);
-    $row = mysqli_num_rows($result);
+    $stmt = mysqli_prepare($conn, "SELECT guthaben FROM users WHERE username = ?");
 
-    if (!$result) {
-        die("SQL-Fehler: " . mysqli_error($conn));
+    if (!$stmt) {
+        die("Fehler beim Vorbereiten der Abfrage: " . mysqli_error($conn));
     }
 
-    if ($row == 1) {
-        $fetch = mysqli_fetch_assoc($result);
-        $guthaben = $fetch['guthaben'];
-        return $guthaben;
-    } else {
-        return "<br>!ERROR - Guthaben nicht gefunden";
+    //parameter binden
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    //abfrage ausführen
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) === 1) {
+        $row = mysqli_fetch_assoc($result);
+        return $row['guthaben'];
     }
+
+    return "<br>!ERROR - Guthaben nicht gefunden";
 }
 
 
