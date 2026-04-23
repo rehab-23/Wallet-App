@@ -132,7 +132,6 @@ function einloggen($conn)
 }
 
 
-
 function guthabenabfrage($conn)
 {
     $username = $_SESSION['username'];
@@ -201,7 +200,6 @@ function einzahlung($conn)
 }
 
 
-
 function auszahlung($conn)
 {
     if (!isset($_POST['ausfuehren_btn'])) {
@@ -254,23 +252,50 @@ function auszahlung($conn)
 
 function ueberweisungausfuehren($conn)
 {
-    if (isset($_POST['senden_btn'])) {
-        $username_sender = $_SESSION['username'];
-        $username_empfaenger = $_POST['name'];
-        $betrag = $_POST['betrag'];
-        $verwendungszweck = $_POST['verwendungszweck'];
-        $datum = date("Y-m-d H:i:s");
+    if (!isset($_POST['senden_btn'])) {
+        return;
+    }
 
-        $sql = "UPDATE users SET guthaben = guthaben - $betrag WHERE username = '$username_sender'";
-        $result = mysqli_query($conn, $sql);
+    $username_sender = $_SESSION['username'];
+    $username_empfaenger = $_POST['name'];
+    $betrag = $_POST['betrag'];
+    $verwendungszweck = $_POST['verwendungszweck'];
+    $datum = date("Y-m-d H:i:s");
 
-        $sql = "UPDATE users SET guthaben = guthaben + $betrag WHERE username = '$username_empfaenger'";
-        $result = mysqli_query($conn, $sql);
+    //Betrag von Sender-Konto subtrahieren
+    $stmt = mysqli_prepare($conn, "UPDATE users SET guthaben = guthaben - ? WHERE username = ?");
 
-        $sql = "INSERT INTO transaktionen (username_sender, username_empfaenger, betrag, datum, verwendungszweck) VALUES ('$username_sender', '$username_empfaenger', '$betrag', '$datum', '$verwendungszweck')";
-        $result = mysqli_query($conn, $sql);
+    if (!$stmt) {
+        die("Fehler beim Vorbereiten: " . mysqli_error($conn));
+    }
 
-        return "Überweisung erfolgreich ausgeführt";
+    mysqli_stmt_bind_param($stmt, "ds", $betrag, $username_sender);
+    mysqli_stmt_execute($stmt);
+
+    //Betrag auf Empfänger-Konto addieren
+    $stmt = mysqli_prepare($conn, "UPDATE users SET guthaben = guthaben + ? WHERE username = ?");
+
+    if (!$stmt) {
+        die("Fehler beim Vorbereiten: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "ds", $betrag, $username_empfaenger);
+    mysqli_stmt_execute($stmt);
+
+    //Transaktion in Transaktionshistorie einfügen
+    $stmt = mysqli_prepare($conn, "INSERT INTO transaktionen (username_sender, username_empfaenger, betrag, datum, verwendungszweck) VALUES (?, ?, ?, ?, ?)");
+
+    if (!$stmt) {
+        die("Fehler beim Vorbereiten: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "ssdss", $username_sender, $username_sender, $betrag, $datum, $verwendungszweck);
+    mysqli_stmt_execute($stmt);
+
+    if (mysqli_stmt_affected_rows($stmt) > 0) {
+        echo "Überweisung erfolgreich ausgeführt";
+    } else {
+        echo "Überweisung fehlgeschlagen";
     }
 }
 
