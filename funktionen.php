@@ -23,19 +23,22 @@ function linkanzeigen()
 function loeschbuttonausfuehren($conn)
 {
     if (isset($_POST['loeschbutton'])) {
-        $getusername = $_SESSION['username'];
-        $select = "DELETE FROM users WHERE username= '$getusername'";
-        $query = mysqli_query($conn, $select);
-        $row = mysqli_num_rows($query);
-        $fetch = mysqli_fetch_array($query);
+        $username = $_SESSION['username'];
+        $stmt = mysqli_prepare($conn, "DELETE FROM users WHERE username= ?");
 
-        if ($row == 1) {
-            session_unset();
-            session_destroy();
-            header("location: login.php");
-            exit;
+        if (!$stmt) {
+            die("Fehler beim Vorbereiten der Abfrage: " . mysqli_error($conn));
+        }
+
+        mysqli_stmt_bind_param($stmt, "s", $username);
+        mysqli_stmt_execute($stmt);
+
+        // Prüfen, ob ein Datensatz gelöscht wurde
+        //mysqli_stmt_affected_rows liest aus wv. Datensätze betroffen waren
+        if (mysqli_stmt_affected_rows($stmt) === 1) {
+            return "<br>User erfolgreich gelöscht.";
         } else {
-            return "username existiert nicht in datenbank";
+            return "<br>User existiert nicht in der Datenbank.";
         }
     }
 }
@@ -86,26 +89,38 @@ function registrieren($conn)
 
 function einloggen($conn)
 {
-    if (isset($_POST['login_btn'])) {
-        $email = $_POST['email'];
-        $passwordeingabe = $_POST['passwordeingabe'];
-        $select = "SELECT username, email, password FROM users WHERE email= '$email'";
-        $query = mysqli_query($conn, $select);
-        //daten als assoziatives array speichern
-        $fetch = mysqli_fetch_assoc($query);
-
-        if ($fetch) {
-            $pwverify = password_verify($passwordeingabe, $fetch['password']);
-            var_dump($pwverify);
-            session_start();
-            $_SESSION['username'] = $fetch['username'];
-            header('location:home.php');
-            exit;
-        } else {
-            return "email und/oder passwort ungültig";
-        }
+    if (!isset($_POST['login_btn'])) {
+        return;
     }
+
+    $email = $_POST['email'];
+    $passwordeingabe = $_POST['passwordeingabe'];
+
+    $stmt = mysqli_prepare($conn, "SELECT username, email, password FROM users WHERE email = ?");
+    if (!$stmt) {
+        die("SQL-Fehler: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "s", $email);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) !== 1) {
+        return "email und/oder passwort ungültig";
+    }
+
+    $fetch = mysqli_fetch_assoc($result);
+
+    if (!password_verify($passwordeingabe, $fetch['password'])) {
+        return "email und/oder passwort ungültig";
+    }
+
+    session_start();
+    $_SESSION['username'] = $fetch['username'];
+    header("Location: home.php");
+    exit;
 }
+
 
 
 function guthabenabfrage($conn)
@@ -134,58 +149,95 @@ function guthabenabfrage($conn)
 
 function einzahlung($conn)
 {
-    if (isset($_POST['ausfuehren_btn'])) {
-        $username = $_SESSION['username'];
-        $betrag = $_POST['betrag'];
-        //Guthaben + Betrag verrechnen
-        $sql = "SELECT guthaben FROM users WHERE username = '$username'";
-        $result = mysqli_query($conn, $sql);
-        $row = mysqli_num_rows($result);
+    if (!isset($_POST['ausfuehren_btn'])) {
+        return;
+    }
 
-        //ggf. Fehlermeldung ausgeben
-        if (!$result) {
-            die("SQL-Fehler: " . mysqli_error($conn));
-        }
+    $username = $_SESSION['username'];
+    $betrag = floatval($_POST['betrag']);
 
-        if ($row == 1) {
-            $fetch = mysqli_fetch_assoc($result);
-            $guthaben_alt = $fetch['guthaben'];
-            $guthaben_neu = $guthaben_alt + $betrag;
-            $sql = "UPDATE users SET guthaben='$guthaben_neu' WHERE username='$username'";
-            $result = mysqli_query($conn, $sql);
-            return "<br>Einzahlung erfolgreich";
-        } else {
-            return "<br>!ERROR - Benutzer nicht gefunden";
-        }
+    //Guthaben abrufen
+    $stmt = mysqli_prepare($conn, "SELECT guthaben FROM users WHERE username = ?");
+    if (!$stmt) {
+        die("SQL-Fehler: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) !== 1) {
+        return "<br>!ERROR - Benutzer nicht gefunden";
+    }
+
+    $fetch = mysqli_fetch_assoc($result);
+    $guthaben_alt = $fetch['guthaben'];
+    $guthaben_neu = $guthaben_alt + $betrag;
+
+    //Guthaben aktualisieren
+    $stmt = mysqli_prepare($conn, "UPDATE users SET guthaben = ? WHERE username = ?");
+    if (!$stmt) {
+        die("SQL-Fehler: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "ds", $guthaben_neu, $username);
+    mysqli_stmt_execute($stmt);
+
+    if (mysqli_stmt_affected_rows($stmt) === 1) {
+        return "<br>Einzahlung erfolgreich";
+    } else {
+        return "<br>Einzahlung fehlgeschlagen";
     }
 }
 
 
+
 function auszahlung($conn)
 {
-    if (isset($_POST['ausfuehren_btn'])) {
-        $username = $_SESSION['username'];
-        $betrag = $_POST['betrag'];
-        //Guthaben + Betrag verrechnen
-        $sql = "SELECT guthaben FROM users WHERE username = '$username'";
-        $result = mysqli_query($conn, $sql);
-        $row = mysqli_num_rows($result);
+    if (!isset($_POST['ausfuehren_btn'])) {
+        return;
+    }
 
-        //ggf. Fehlermeldung ausgeben
-        if (!$result) {
-            die("SQL-Fehler: " . mysqli_error($conn));
-        }
+    $username = $_SESSION['username'];
+    $betrag = floatval($_POST['betrag']);
 
-        if ($row == 1) {
-            $fetch = mysqli_fetch_assoc($result);
-            $guthaben_alt = $fetch['guthaben'];
-            $guthaben_neu = $guthaben_alt - $betrag;
-            $sql = "UPDATE users SET guthaben='$guthaben_neu' WHERE username='$username'";
-            $result = mysqli_query($conn, $sql);
-            return "<br>Auszahlung erfolgreich";
-        } else {
-            return "<br>!ERROR - Benutzer nicht gefunden";
-        }
+    //Guthaben abrufen
+    $stmt = mysqli_prepare($conn, "SELECT guthaben FROM users WHERE username = ?");
+    if (!$stmt) {
+        die("SQL-Fehler: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) !== 1) {
+        return "<br>!ERROR - Benutzer nicht gefunden";
+    }
+
+    $fetch = mysqli_fetch_assoc($result);
+    $guthaben_alt = $fetch['guthaben'];
+
+    // Prüfen, ob genug Guthaben vorhanden ist
+    if ($betrag > $guthaben_alt) {
+        return "<br>!ERROR - Nicht genug Guthaben";
+    }
+
+    $guthaben_neu = $guthaben_alt - $betrag;
+
+    //Guthaben aktualisieren
+    $stmt = mysqli_prepare($conn, "UPDATE users SET guthaben = ? WHERE username = ?");
+    if (!$stmt) {
+        die("SQL-Fehler: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "ds", $guthaben_neu, $username);
+    mysqli_stmt_execute($stmt);
+
+    if (mysqli_stmt_affected_rows($stmt) === 1) {
+        return "<br>Auszahlung erfolgreich";
+    } else {
+        return "<br>Auszahlung fehlgeschlagen";
     }
 }
 
