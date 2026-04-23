@@ -52,38 +52,48 @@ function buttonblau($seitenlink, $bezeichnung)
 
 function registrieren($conn)
 {
-    if (isset($_POST['register_btn'])) {
-        $username = $_POST['username'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $password_hashed = password_hash($password, PASSWORD_DEFAULT);
-        $password_wdh = $_POST['password_wdh'];
-
-        //1. kontrolle: email + username prüfen
-        $select = "SELECT * FROM users WHERE email= '$email' OR username = '$username'";
-        $query = mysqli_query($conn, $select);
-        $row = mysqli_num_rows($query);
-        $fetch = mysqli_fetch_array($query);
-
-        if ($row == 0) {
-            //2. kontrolle: passwort prüfen
-            if ($password_wdh == $password) {
-                $select = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password_hashed')";
-                $query = mysqli_query($conn, $select);
-
-                if ($query) {
-                    header('Location: login.php');
-                    exit;
-                } else {
-                    return "Fehler beim Registrieren: " . mysqli_error($conn);
-                }
-            } else {
-                return "<br>password stimmt nicht überein, Registrierung abgebrochen";
-            }
-        } else {
-            return "<br>email und/oder username bereits registriert, Reg fehlgeschlagen";
-        }
+    if (!isset($_POST['register_btn'])) {
+        return;
     }
+
+    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+    $password_wdh = $_POST['password_wdh'];
+    $password_hashed = password_hash($password, PASSWORD_DEFAULT);
+
+    if ($password !== $password_wdh) {
+        return "Passwörter stimmen nicht überein";
+    }
+
+    // 1. Kontrolle: email + username prüfen
+    $stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE email = ? OR username = ?");
+    if (!$stmt) {
+        die("Fehler beim Vorbereiten der Abfrage: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "ss", $email, $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) > 0) {
+        return "email und/oder username bereits registriert";
+    }
+
+    // 2. INSERT durchführen
+    $stmt = mysqli_prepare($conn, "INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+    if (!$stmt) {
+        die("Fehler beim Vorbereiten der Abfrage: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "sss", $username, $email, $password_hashed);
+
+    if (!mysqli_stmt_execute($stmt)) {
+        return "Fehler beim Registrieren: " . mysqli_stmt_error($stmt);
+    }
+
+    header("Location: login.php");
+    exit;
 }
 
 
@@ -268,8 +278,18 @@ function ueberweisungausfuehren($conn)
 function transaktionshistorieanzeigen($conn)
 {
     $username_sender_session = $_SESSION['username'];
-    $sql = "SELECT * FROM transaktionen WHERE username_sender = '$username_sender_session' OR username_empfaenger = '$username_sender_session'";
-    $result = mysqli_query($conn, $sql);
+    $stmt = mysqli_prepare($conn, "SELECT * FROM transaktionen WHERE username_sender = ? OR username_empfaenger = ?");
+
+    if (!$stmt) {
+        die("Fehler beim Vorbereiten der Abfrage: " . mysqli_error($conn));
+    }
+
+    //parameter binden
+    mysqli_stmt_bind_param($stmt, "ss", $username_sender_session, $username_sender_session);
+    //abfrage ausführen
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
     $html_output = "";
 
     //Daten aus Array $result als mysqli_result-Objekt auslesen
