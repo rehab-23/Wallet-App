@@ -1,7 +1,7 @@
 <?php
-    session_start();
-    include 'Config.php';
-    include 'funktionen.php';
+session_start();
+include 'Config.php';
+include 'funktionen.php';
 ?>
 
 <br>
@@ -19,7 +19,7 @@
             <br>
             <?php echo welcomemessage(); ?>
             <br><b>Aktuelles Guthaben:</b>
-            <?php echo guthabenabfrage($config); ?>
+            <?php echo guthabenabfrage($conn); ?>
             <br><br><br>
             <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
                 <a class="btn btn-primary" href="einzahlen.php">Einzahlung</a>

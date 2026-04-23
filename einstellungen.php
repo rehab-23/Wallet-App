@@ -1,9 +1,8 @@
 <?php
-    session_start();
-    include 'Config.php';
-    include 'funktionen.php';
-
-    echo loeschbuttonausfuehren($config);
+session_start();
+include 'Config.php';
+include 'funktionen.php';
+echo loeschbuttonausfuehren($conn);
 ?>
 
 <!DOCTYPE html>

@@ -1,8 +1,7 @@
 <?php
-    include 'Config.php';
-    include 'funktionen.php';
-
-    echo registrieren($config);
+include 'Config.php';
+include 'funktionen.php';
+echo registrieren($conn);
 ?>
 
 <!DOCTYPE html>

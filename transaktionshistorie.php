@@ -1,7 +1,7 @@
 <?php
-    session_start();
-    include 'Config.php';
-    include 'funktionen.php';
+session_start();
+include 'Config.php';
+include 'funktionen.php';
 ?>
 
 <!DOCTYPE html>
@@ -16,7 +16,7 @@
             <form action="" method="POST">
                 <div id="transaktionshistorie">
                     <?php
-                        echo transaktionshistorieanzeigen($config);
+                    echo transaktionshistorieanzeigen($conn);
                     ?>
                 </div>
             </form>

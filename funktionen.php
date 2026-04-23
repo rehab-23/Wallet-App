@@ -20,22 +20,25 @@ function linkanzeigen()
 }
 
 
-function loeschbuttonausfuehren($config)
+function loeschbuttonausfuehren($conn)
 {
     if (isset($_POST['loeschbutton'])) {
-        $getusername = $_SESSION['username'];
-        $select = "DELETE FROM users WHERE username= '$getusername'";
-        $query = mysqli_query($config, $select);
-        $row = mysqli_num_rows($query);
-        $fetch = mysqli_fetch_array($query);
+        $username = $_SESSION['username'];
+        $stmt = mysqli_prepare($conn, "DELETE FROM users WHERE username= ?");
 
-        if ($row == 1) {
-            session_unset();
-            session_destroy();
-            header("location: login.php");
-            exit;
+        if (!$stmt) {
+            die("Fehler beim Vorbereiten der Abfrage: " . mysqli_error($conn));
+        }
+
+        mysqli_stmt_bind_param($stmt, "s", $username);
+        mysqli_stmt_execute($stmt);
+
+        // Prüfen, ob ein Datensatz gelöscht wurde
+        //mysqli_stmt_affected_rows liest aus wv. Datensätze betroffen waren
+        if (mysqli_stmt_affected_rows($stmt) === 1) {
+            return "<br>User erfolgreich gelöscht.";
         } else {
-            return "username existiert nicht in datenbank";
+            return "<br>User existiert nicht in der Datenbank.";
         }
     }
 }
@@ -47,174 +50,271 @@ function buttonblau($seitenlink, $bezeichnung)
 }
 
 
-function registrieren($config)
+function registrieren($conn)
 {
-    if (isset($_POST['register_btn'])) {
-        $username = $_POST['username'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $password_hashed = password_hash($password, PASSWORD_DEFAULT);
-        $password_wdh = $_POST['password_wdh'];
-
-        //1. kontrolle: email + username prüfen
-        $select = "SELECT * FROM users WHERE email= '$email' OR username = '$username'";
-        $query = mysqli_query($config, $select);
-        $row = mysqli_num_rows($query);
-        $fetch = mysqli_fetch_array($query);
-
-        if ($row == 0) {
-            //2. kontrolle: passwort prüfen
-            if ($password_wdh == $password) {
-                $select = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password_hashed')";
-                $query = mysqli_query($config, $select);
-
-                if ($query) {
-                    header('Location: login.php');
-                    exit;
-                } else {
-                    return "Fehler beim Registrieren: " . mysqli_error($config);
-                }
-            } else {
-                return "<br>password stimmt nicht überein, Registrierung abgebrochen";
-            }
-        } else {
-            return "<br>email und/oder username bereits registriert, Reg fehlgeschlagen";
-        }
+    if (!isset($_POST['register_btn'])) {
+        return;
     }
+
+    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+    $password_wdh = $_POST['password_wdh'];
+    $password_hashed = password_hash($password, PASSWORD_DEFAULT);
+
+    if ($password !== $password_wdh) {
+        return "Passwörter stimmen nicht überein";
+    }
+
+    // 1. Kontrolle: email + username prüfen
+    $stmt = mysqli_prepare($conn, "SELECT * FROM users WHERE email = ? OR username = ?");
+    if (!$stmt) {
+        die("Fehler beim Vorbereiten der Abfrage: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "ss", $email, $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) > 0) {
+        return "email und/oder username bereits registriert";
+    }
+
+    // 2. INSERT durchführen
+    $stmt = mysqli_prepare($conn, "INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+    if (!$stmt) {
+        die("Fehler beim Vorbereiten der Abfrage: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "sss", $username, $email, $password_hashed);
+
+    if (!mysqli_stmt_execute($stmt)) {
+        return "Fehler beim Registrieren: " . mysqli_stmt_error($stmt);
+    }
+
+    header("Location: login.php");
+    exit;
 }
 
 
-function einloggen($config)
+function einloggen($conn)
 {
-    if (isset($_POST['login_btn'])) {
-        $email = $_POST['email'];
-        $passwordeingabe = $_POST['passwordeingabe'];
-        $select = "SELECT username, email, password FROM users WHERE email= '$email'";
-        $query = mysqli_query($config, $select);
-        //daten als assoziatives array speichern
-        $fetch = mysqli_fetch_assoc($query);
-
-        if ($fetch) {
-            $pwverify = password_verify($passwordeingabe, $fetch['password']);
-            var_dump($pwverify);
-            session_start();
-            $_SESSION['username'] = $fetch['username'];
-            header('location:home.php');
-            exit;
-        } else {
-            return "email und/oder passwort ungültig";
-        }
+    if (!isset($_POST['login_btn'])) {
+        return;
     }
+
+    $email = $_POST['email'];
+    $passwordeingabe = $_POST['passwordeingabe'];
+
+    $stmt = mysqli_prepare($conn, "SELECT username, email, password FROM users WHERE email = ?");
+    if (!$stmt) {
+        die("SQL-Fehler: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "s", $email);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) !== 1) {
+        return "email und/oder passwort ungültig";
+    }
+
+    $fetch = mysqli_fetch_assoc($result);
+
+    if (!password_verify($passwordeingabe, $fetch['password'])) {
+        return "email und/oder passwort ungültig";
+    }
+
+    session_start();
+    $_SESSION['username'] = $fetch['username'];
+    header("Location: home.php");
+    exit;
 }
 
 
-function guthabenabfrage($config)
+function guthabenabfrage($conn)
 {
     $username = $_SESSION['username'];
-    $sql = "SELECT guthaben FROM users WHERE username = '$username'";
-    $result = mysqli_query($config, $sql);
-    $row = mysqli_num_rows($result);
+    $stmt = mysqli_prepare($conn, "SELECT guthaben FROM users WHERE username = ?");
 
-    if (!$result) {
-        die("SQL-Fehler: " . mysqli_error($config));
+    if (!$stmt) {
+        die("Fehler beim Vorbereiten der Abfrage: " . mysqli_error($conn));
     }
 
-    if ($row == 1) {
-        $fetch = mysqli_fetch_assoc($result);
-        $guthaben = $fetch['guthaben'];
-        return $guthaben;
+    //parameter binden
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    //abfrage ausführen
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) === 1) {
+        $row = mysqli_fetch_assoc($result);
+        return $row['guthaben'];
+    }
+
+    return "<br>!ERROR - Guthaben nicht gefunden";
+}
+
+
+function einzahlung($conn)
+{
+    if (!isset($_POST['ausfuehren_btn'])) {
+        return;
+    }
+
+    $username = $_SESSION['username'];
+    $betrag = floatval($_POST['betrag']);
+
+    //Guthaben abrufen
+    $stmt = mysqli_prepare($conn, "SELECT guthaben FROM users WHERE username = ?");
+    if (!$stmt) {
+        die("SQL-Fehler: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) !== 1) {
+        return "<br>!ERROR - Benutzer nicht gefunden";
+    }
+
+    $fetch = mysqli_fetch_assoc($result);
+    $guthaben_alt = $fetch['guthaben'];
+    $guthaben_neu = $guthaben_alt + $betrag;
+
+    //Guthaben aktualisieren
+    $stmt = mysqli_prepare($conn, "UPDATE users SET guthaben = ? WHERE username = ?");
+    if (!$stmt) {
+        die("SQL-Fehler: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "ds", $guthaben_neu, $username);
+    mysqli_stmt_execute($stmt);
+
+    if (mysqli_stmt_affected_rows($stmt) === 1) {
+        return "<br>Einzahlung erfolgreich";
     } else {
-        return "<br>!ERROR - Guthaben nicht gefunden";
+        return "<br>Einzahlung fehlgeschlagen";
     }
 }
 
 
-function einzahlung($config)
+function auszahlung($conn)
 {
-    if (isset($_POST['ausfuehren_btn'])) {
-        $username = $_SESSION['username'];
-        $betrag = $_POST['betrag'];
-        //Guthaben + Betrag verrechnen
-        $sql = "SELECT guthaben FROM users WHERE username = '$username'";
-        $result = mysqli_query($config, $sql);
-        $row = mysqli_num_rows($result);
+    if (!isset($_POST['ausfuehren_btn'])) {
+        return;
+    }
 
-        //ggf. Fehlermeldung ausgeben
-        if (!$result) {
-            die("SQL-Fehler: " . mysqli_error($config));
-        }
+    $username = $_SESSION['username'];
+    $betrag = floatval($_POST['betrag']);
 
-        if ($row == 1) {
-            $fetch = mysqli_fetch_assoc($result);
-            $guthaben_alt = $fetch['guthaben'];
-            $guthaben_neu = $guthaben_alt + $betrag;
-            $sql = "UPDATE users SET guthaben='$guthaben_neu' WHERE username='$username'";
-            $result = mysqli_query($config, $sql);
-            return "<br>Einzahlung erfolgreich";
-        } else {
-            return "<br>!ERROR - Benutzer nicht gefunden";
-        }
+    //Guthaben abrufen
+    $stmt = mysqli_prepare($conn, "SELECT guthaben FROM users WHERE username = ?");
+    if (!$stmt) {
+        die("SQL-Fehler: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) !== 1) {
+        return "<br>!ERROR - Benutzer nicht gefunden";
+    }
+
+    $fetch = mysqli_fetch_assoc($result);
+    $guthaben_alt = $fetch['guthaben'];
+
+    // Prüfen, ob genug Guthaben vorhanden ist
+    if ($betrag > $guthaben_alt) {
+        return "<br>!ERROR - Nicht genug Guthaben";
+    }
+
+    $guthaben_neu = $guthaben_alt - $betrag;
+
+    //Guthaben aktualisieren
+    $stmt = mysqli_prepare($conn, "UPDATE users SET guthaben = ? WHERE username = ?");
+    if (!$stmt) {
+        die("SQL-Fehler: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "ds", $guthaben_neu, $username);
+    mysqli_stmt_execute($stmt);
+
+    if (mysqli_stmt_affected_rows($stmt) === 1) {
+        return "<br>Auszahlung erfolgreich";
+    } else {
+        return "<br>Auszahlung fehlgeschlagen";
     }
 }
 
 
-function auszahlung($config)
+function ueberweisungausfuehren($conn)
 {
-    if (isset($_POST['ausfuehren_btn'])) {
-        $username = $_SESSION['username'];
-        $betrag = $_POST['betrag'];
-        //Guthaben + Betrag verrechnen
-        $sql = "SELECT guthaben FROM users WHERE username = '$username'";
-        $result = mysqli_query($config, $sql);
-        $row = mysqli_num_rows($result);
+    if (!isset($_POST['senden_btn'])) {
+        return;
+    }
 
-        //ggf. Fehlermeldung ausgeben
-        if (!$result) {
-            die("SQL-Fehler: " . mysqli_error($config));
-        }
+    $username_sender = $_SESSION['username'];
+    $username_empfaenger = $_POST['name'];
+    $betrag = $_POST['betrag'];
+    $verwendungszweck = $_POST['verwendungszweck'];
+    $datum = date("Y-m-d H:i:s");
 
-        if ($row == 1) {
-            $fetch = mysqli_fetch_assoc($result);
-            $guthaben_alt = $fetch['guthaben'];
-            $guthaben_neu = $guthaben_alt - $betrag;
-            $sql = "UPDATE users SET guthaben='$guthaben_neu' WHERE username='$username'";
-            $result = mysqli_query($config, $sql);
-            return "<br>Auszahlung erfolgreich";
-        } else {
-            return "<br>!ERROR - Benutzer nicht gefunden";
-        }
+    //Betrag von Sender-Konto subtrahieren
+    $stmt = mysqli_prepare($conn, "UPDATE users SET guthaben = guthaben - ? WHERE username = ?");
+
+    if (!$stmt) {
+        die("Fehler beim Vorbereiten: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "ds", $betrag, $username_sender);
+    mysqli_stmt_execute($stmt);
+
+    //Betrag auf Empfänger-Konto addieren
+    $stmt = mysqli_prepare($conn, "UPDATE users SET guthaben = guthaben + ? WHERE username = ?");
+
+    if (!$stmt) {
+        die("Fehler beim Vorbereiten: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "ds", $betrag, $username_empfaenger);
+    mysqli_stmt_execute($stmt);
+
+    //Transaktion in Transaktionshistorie einfügen
+    $stmt = mysqli_prepare($conn, "INSERT INTO transaktionen (username_sender, username_empfaenger, betrag, datum, verwendungszweck) VALUES (?, ?, ?, ?, ?)");
+
+    if (!$stmt) {
+        die("Fehler beim Vorbereiten: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "ssdss", $username_sender, $username_sender, $betrag, $datum, $verwendungszweck);
+    mysqli_stmt_execute($stmt);
+
+    if (mysqli_stmt_affected_rows($stmt) > 0) {
+        echo "Überweisung erfolgreich ausgeführt";
+    } else {
+        echo "Überweisung fehlgeschlagen";
     }
 }
 
 
-function ueberweisungausfuehren($config)
-{
-    if (isset($_POST['senden_btn'])) {
-        $username_sender = $_SESSION['username'];
-        $username_empfaenger = $_POST['name'];
-        $betrag = $_POST['betrag'];
-        $verwendungszweck = $_POST['verwendungszweck'];
-        $datum = date("Y-m-d H:i:s");
-
-        $sql = "UPDATE users SET guthaben = guthaben - $betrag WHERE username = '$username_sender'";
-        $result = mysqli_query($config, $sql);
-
-        $sql = "UPDATE users SET guthaben = guthaben + $betrag WHERE username = '$username_empfaenger'";
-        $result = mysqli_query($config, $sql);
-
-        $sql = "INSERT INTO transaktionen (username_sender, username_empfaenger, betrag, datum, verwendungszweck) VALUES ('$username_sender', '$username_empfaenger', '$betrag', '$datum', '$verwendungszweck')";
-        $result = mysqli_query($config, $sql);
-
-        return "Überweisung erfolgreich ausgeführt";
-    }
-}
-
-
-function transaktionshistorieanzeigen($config)
+function transaktionshistorieanzeigen($conn)
 {
     $username_sender_session = $_SESSION['username'];
-    $sql = "SELECT * FROM transaktionen WHERE username_sender = '$username_sender_session' OR username_empfaenger = '$username_sender_session'";
-    $result = mysqli_query($config, $sql);
+    $stmt = mysqli_prepare($conn, "SELECT * FROM transaktionen WHERE username_sender = ? OR username_empfaenger = ?");
+
+    if (!$stmt) {
+        die("Fehler beim Vorbereiten der Abfrage: " . mysqli_error($conn));
+    }
+
+    //parameter binden
+    mysqli_stmt_bind_param($stmt, "ss", $username_sender_session, $username_sender_session);
+    //abfrage ausführen
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
     $html_output = "";
 
     //Daten aus Array $result als mysqli_result-Objekt auslesen
