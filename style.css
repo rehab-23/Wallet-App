@@ -1,0 +1,16 @@
+/* Äußerer Bereich: zentriert Inhalt vertikal & horizontal */
+.container-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+}
+
+/* Innerer Bereich: Text zentrieren */
+.container-content {
+    text-align: center;
+}
+
+.ueberschrift-zentriert {
+    text-align: center;
+}

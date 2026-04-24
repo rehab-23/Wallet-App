@@ -4,16 +4,17 @@ include 'Config.php';
 include 'funktionen.php';
 ?>
 
+<br><br><br>
+
 <!DOCTYPE html>
 <html lang="en">
 <?php include 'head.php'; ?>
 
 <body>
     <?php include 'header.php'; ?>
-
-    <div style="display: flex; align-items: center; justify-content: center;">
-        <div>
-            <h1>- Einzahlen -</h1>
+    <h1 class="ueberschrift-zentriert">- Einzahlen -</h1>
+    <div class="container-wrapper">
+        <div class="container-content">
             <form action="" method="POST">
                 <div class="mb-3">
                     <label for="betrag" class="form-label">Betrag eingeben</label>

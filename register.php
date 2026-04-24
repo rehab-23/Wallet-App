@@ -4,6 +4,8 @@ include 'funktionen.php';
 echo registrieren($conn);
 ?>
 
+<br><br><br>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,9 +13,9 @@ echo registrieren($conn);
 
 <body>
     <?php include 'header.php'; ?>
-    <div style="display: flex; align-items: center; justify-content: center;">
-        <div>
-            <h1>- Registrierung -</h1>
+    <h1 class="ueberschrift-zentriert">- Registrierung -</h1>
+    <div class="container-wrapper">
+        <div class="container-content">
             <form action="" method="POST">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username eingeben</label>

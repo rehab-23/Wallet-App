@@ -5,6 +5,8 @@ include 'funktionen.php';
 echo loeschbuttonausfuehren($conn);
 ?>
 
+<br><br><br>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,10 +14,9 @@ echo loeschbuttonausfuehren($conn);
 
 <body>
     <?php include 'header.php'; ?>
-    <div style="display: flex; align-items: center; justify-content: center;">
-        <div>
-            <h1>- Einstellungen -</h1>
-
+    <h1 class="ueberschrift-zentriert">- Einstellungen -</h1>
+    <div class="container-wrapper">
+        <div class="container-content">
             <form method="post">
                 <button type="submit" class="btn btn-danger" name="loeschbutton">Account dauerhaft löschen</button>
             </form>

@@ -4,6 +4,8 @@ include 'funktionen.php';
 echo einloggen($conn);
 ?>
 
+<br><br><br>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,10 +13,9 @@ echo einloggen($conn);
 
 <body>
     <?php include 'header.php'; ?>
-
-    <div style="display: flex; align-items: center; justify-content: center;">
-        <div>
-            <h1>- Login -</h1>
+    <h1 class="ueberschrift-zentriert">- Login -</h1>
+    <div class="container-wrapper">
+        <div class="container-content">
             <form action="" method="POST">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email eingeben</label>
