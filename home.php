@@ -4,7 +4,7 @@ include 'Config.php';
 include 'funktionen.php';
 ?>
 
-<br>
+<br><br><br>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,9 +13,9 @@ include 'funktionen.php';
 
 <body>
     <?php include 'header.php'; ?>
-    <div style="display: flex; align-items: center; justify-content: center;">
-        <div>
-            <h1>- Home -</h1>
+    <h1 class="ueberschrift-zentriert">- Home -</h1>
+    <div class="container-wrapper">
+        <div class="container-content">
             <br>
             <?php echo welcomemessage(); ?>
             <br><b>Aktuelles Guthaben:</b>

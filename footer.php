@@ -1,5 +1,7 @@
 <footer class="app-footer">
-    <div style="display: flex; align-items: center; justify-content: center;">
-        <p>Version 1.0</p>
+    <div class="container-wrapper">
+        <div class="container-content">
+            <p>Version 1.0</p>
+        </div>
     </div>
 </footer>
