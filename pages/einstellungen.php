@@ -1,7 +1,7 @@
 <?php
 session_start();
-include 'Config.php';
-include 'funktionen.php';
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../src/funktionen.php';
 echo loeschbuttonausfuehren($conn);
 ?>
 
@@ -10,10 +10,10 @@ echo loeschbuttonausfuehren($conn);
 <!DOCTYPE html>
 <html lang="en">
 
-<?php include 'head.php'; ?>
+<?php require_once __DIR__ . '/../templates/head.php'; ?>
 
 <body>
-    <?php include 'header.php'; ?>
+    <?php require_once __DIR__ . '/../templates/header.php'; ?>
     <h1 class="ueberschrift-zentriert">- Einstellungen -</h1>
     <div class="container-wrapper">
         <div class="container-content">
@@ -24,7 +24,7 @@ echo loeschbuttonausfuehren($conn);
             <?php echo buttonblau("home.php", "zurück"); ?>
         </div>
     </div>
-    <?php include 'footer.php'; ?>
+    <?php require_once __DIR__ . '/../templates/footer.php'; ?>
 </body>
 
 </html>

@@ -1,1 +1,5 @@
-ErrorDocument 404 /Wallet-App/404.php
+DirectoryIndex index.php
+
+ErrorDocument 404 /404.php
+
+RewriteEngine On
